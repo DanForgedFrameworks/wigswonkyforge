@@ -164,7 +164,11 @@
         body: JSON.stringify({ name: name, email: email, message: msg, _subject: 'Wonky Forge enquiry from ' + name, _template: 'table', _replyto: email })
       }).then(function (r) { return r.json().then(function (j) { if (!r.ok || String(j.success) !== 'true') throw new Error(j.message || 'failed'); }); })
         .then(function () { form.reset(); note.className = 'form-note is-ok'; note.textContent = "Sent — it's landed with me. I'll get back to you."; })
-        .catch(function () { mailtoFallback(name, email, msg); })
+        .catch(function (err) {
+          // Before the form is activated, FormSubmit refuses messages and says so. Don't pretend it sent.
+          if (/activat/i.test(err.message)) { note.className = 'form-note'; note.textContent = "The form isn't switched on yet — email me directly at " + CONTACT_EMAIL + '.'; return; }
+          mailtoFallback(name, email, msg);
+        })
         .then(function () { sendBtn.disabled = false; });
     });
   }

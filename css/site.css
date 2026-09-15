@@ -190,6 +190,8 @@ figure { margin: 0; }
 .form input { height: 46px; }
 .form textarea { min-height: 130px; resize: vertical; }
 .form input:focus, .form textarea:focus { outline: none; border-color: var(--ember); }
+/* Keep browser autofill on the dark field instead of its pale blue */
+.form input:-webkit-autofill, .form input:-webkit-autofill:hover, .form input:-webkit-autofill:focus { -webkit-text-fill-color: var(--cream); caret-color: var(--cream); box-shadow: 0 0 0 1000px var(--coal) inset; transition: background-color 9999s ease-out; }
 .form ::placeholder { color: var(--muted); }
 .hp { position: absolute; left: -9999px; }
 .form-note { margin: 0; font-size: 14px; color: var(--muted); }
