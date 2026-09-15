@@ -34,8 +34,20 @@ def collect(src_dirs):
     return found
 
 
+def hydrate(path):
+    """Read every byte so OneDrive downloads a cloud-only file before Pillow opens it.
+    Skipping this can produce black images from placeholder files."""
+    with open(path, "rb") as f:
+        while f.read(1 << 20):
+            pass
+
+
 def convert(src, out_dir, stem, widths, quality, force):
     written = 0
+    if not force and all((out_dir / f"{stem}-{w}.webp").exists()
+                         and (out_dir / f"{stem}-{w}.webp").stat().st_mtime >= src.stat().st_mtime for w in widths):
+        return written
+    hydrate(src)
     with Image.open(src) as im:
         im = ImageOps.exif_transpose(im)
         has_alpha = im.mode in ("RGBA", "LA") or (im.mode == "P" and "transparency" in im.info)
